@@ -13,10 +13,34 @@ struct ContentView: View {
     var body: some View {
         NavigationStack{
             List(articles) { article in
-                NavigationLink(article.title, value: article)
+                NavigationLink(value: article){
+                    HStack{
+                        AsyncImage(url: article.thumbnail){phase in
+                            switch phase{
+                            case .empty:
+                                ProgressView()
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            default:
+                                Image(systemName: "newspaper.fill")
+                            }
+                        }
+                        .frame(width: 80, height: 80)
+                        .clipShape(.rect(cornerRadius:10))
+                        VStack(alignment: .leading) {
+                            Text(article.section)
+                                .font(.caption.weight(.heavy))
+                            
+                            Text(article.title)
+                        }
+                    }
+                }
             }
+            .navigationTitle("DCNews")
             .navigationDestination(for: Article.self) { article in
-                Text(article.text)
+                ArticleView(article: article)
             }
         }
         .task(loadArticles)
@@ -30,6 +54,9 @@ struct ContentView: View {
             let session = URLSession(configuration: .ephemeral)
             let (data, _) = try await session.data(from: url)
             let decoder = JSONDecoder()
+            
+            decoder.dateDecodingStrategy = .iso8601
+            
             articles = try decoder.decode([Article].self, from: data)
         }
         catch{
