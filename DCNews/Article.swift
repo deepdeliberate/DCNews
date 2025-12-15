@@ -7,6 +7,8 @@
 
 import Foundation
 
+// Article Model
+
 struct Article: Codable, Hashable, Identifiable {
     let id: String
     var title: String

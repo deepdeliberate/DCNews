@@ -22,9 +22,11 @@ struct ContentView: View {
         .task(loadArticles)
     }
     
+    // Lazy loading all the articles from the website.
     func loadArticles() async {
         do{
             let url = URL(string: "https://hws.dev/news")!
+            // Using ephemeral session
             let session = URLSession(configuration: .ephemeral)
             let (data, _) = try await session.data(from: url)
             let decoder = JSONDecoder()
