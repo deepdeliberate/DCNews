@@ -21,14 +21,23 @@ extension ContentView{
         
         var filterText = ""
         
+        private var urlSession: any DataFetching
+        
+        /// The array of articles that matches the user's filter text
         var filteredArticles: [Article] {
             if filterText.isEmpty{
                 articles
             } else{
+                // Using localizedStandardContains here means we ignore case and diacritics.
                 articles.filter{
                     $0.title.localizedStandardContains(filterText)
                 }
             }
+        }
+        
+        /// By default normal Session (Data from defined website), params explicitly used for Testing, not required here
+        init(session: any DataFetching = URLSession.shared) {
+            self.urlSession = session
         }
         
         // Lazy loading all the articles from the website.
@@ -36,9 +45,7 @@ extension ContentView{
             loadState = .loading
             do{
                 let url = URL(string: "https://hws.dev/news")!
-                // Using ephemeral session
-                let session = URLSession(configuration: .ephemeral)
-                let (data, _) = try await session.data(from: url)
+                let (data, _) = try await urlSession.data(from: url)
                 let decoder = JSONDecoder()
                 
                 decoder.dateDecodingStrategy = .iso8601

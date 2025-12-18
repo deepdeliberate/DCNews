@@ -24,7 +24,7 @@ struct ContentView: View {
                     List(viewModel.filteredArticles, rowContent: ArticleRow.init)
                         .navigationTitle("DCNews")
                         .navigationDestination(for: Article.self, destination: ArticleView.init)
-                        .refreshable(action: viewModel.loadArticles)
+                        .refreshable(action: viewModel.loadArticles) // Refreshable functionality can be useful to quickly reload if looking for changes
                         .searchable(text: $viewModel.filterText, prompt: "Filter Articles")
                 }
             }
